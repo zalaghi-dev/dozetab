@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "DozeTab",
+  "version": "1.0.0",
+  "description": "DozeTabs 💤 – A lightweight Chrome extension that lets you “doze” your tabs instead of keeping them open.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["<all_urls>"]
+}
