@@ -2,21 +2,32 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import tailwindcss from "@tailwindcss/vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const corePath = `${__dirname}/core/`;
+const corePath = resolve(__dirname, "src/core");
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
+  optimizeDeps: {
+    include: ["@tailwindcss/vite"],
+  },
+  ssr: {
+    noExternal: ["@tailwindcss/vite"],
+  },
   build: {
     outDir: "dist",
     sourcemap: true,
     rollupOptions: {
       input: {
-        // CORE FILES
-        popup: resolve(corePath, "ui/popup.tsx"),
-        background: resolve(corePath, "background/background.ts"),
-        content: resolve(corePath, "content/content.ts"),
+        popup: resolve(__dirname, "src/core/ui/popup.tsx"),
+        background: resolve(__dirname, "src/core/background/background.ts"),
+        content: resolve(__dirname, "src/core/content/content.ts"),
       },
       output: {
         entryFileNames: "[name].js",

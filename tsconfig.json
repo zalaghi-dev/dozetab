@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "target": "ESNext",
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
@@ -10,5 +14,5 @@
     "jsx": "react-jsx",
     "outDir": "dist"
   },
-  "include": ["src", "ui/popup.tsx", "background/background.ts", "content/content.ts"]
+  "include": ["src"]
 }
