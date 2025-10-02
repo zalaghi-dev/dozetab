@@ -1,24 +1,39 @@
+import { useState } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import "../index.css";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+import { TabNavigation } from "./components/TabNavigation";
+import { SnoozeTab } from "./components/SnoozeTab";
+import { SnoozedTab } from "./components/SnoozedTab";
+import { SettingsTab } from "./components/SettingsTab";
+import { useLanguage } from "./hooks/useLanguage";
 
 const Popup = () => {
+  const [activeTab, setActiveTab] = useState('snooze');
+  const { isRTL } = useLanguage();
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'snooze':
+        return <SnoozeTab />;
+      case 'snoozed':
+        return <SnoozedTab />;
+      case 'settings':
+        return <SettingsTab />;
+      default:
+        return <SnoozeTab />;
+    }
+  };
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="bg-background text-foreground w-md h-96 flex items-center justify-center font-bold text-2xl">
-        <div className="flex flex-col gap-4 items-center">
-          DozeTab
-          <ModeToggle />
-          <Button
-            variant="destructive"
-            onClick={() => alert("hello Extension")}
-          >
-            Dozyyyy
-          </Button>
+      <div className={`bg-background text-foreground w-full h-full min-h-[500px] flex flex-col ${isRTL ? 'rtl' : 'ltr'}`}>
+        <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="flex-1 overflow-hidden">
+          {renderTabContent()}
         </div>
       </div>
     </ThemeProvider>
   );
 };
+
 export default Popup;
