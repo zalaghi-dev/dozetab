@@ -5,35 +5,41 @@ import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const corePath = resolve(__dirname, "src/core");
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-    },
-  },
-  optimizeDeps: {
-    include: ["@tailwindcss/vite"],
-  },
-  ssr: {
-    noExternal: ["@tailwindcss/vite"],
-  },
-  build: {
-    outDir: "dist",
-    sourcemap: true,
-    rollupOptions: {
-      input: {
-        popup: resolve(__dirname, "src/core/ui/popup.tsx"),
-        background: resolve(__dirname, "src/core/background/background.ts"),
-        content: resolve(__dirname, "src/core/content/content.ts"),
-      },
-      output: {
-        entryFileNames: "[name].js",
-        chunkFileNames: "[name].js",
-        assetFileNames: "[name].[ext]",
+export default defineConfig(({ command, mode }) => {
+  const isFirefox = process.env.TARGET === 'firefox';
+  
+  return {
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        "@": resolve(__dirname, "./src"),
       },
     },
-  },
+    optimizeDeps: {
+      include: ["@tailwindcss/vite"],
+    },
+    ssr: {
+      noExternal: ["@tailwindcss/vite"],
+    },
+    build: {
+      outDir: isFirefox ? "dist-firefox" : "dist",
+      sourcemap: true,
+      rollupOptions: {
+        input: {
+          popup: resolve(__dirname, "src/core/ui/popup.tsx"),
+          background: resolve(__dirname, "src/core/background/background.ts"),
+          content: resolve(__dirname, "src/core/content/content.ts"),
+        },
+        output: {
+          entryFileNames: "[name].js",
+          chunkFileNames: "[name].js",
+          assetFileNames: "[name].[ext]",
+        },
+      },
+    },
+    define: {
+      __FIREFOX__: isFirefox,
+    }
+  };
 });

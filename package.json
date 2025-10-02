@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:firefox": "set TARGET=firefox && vite build",
+    "build:all": "npm run build && npm run build:firefox && npm run copy-manifests",
+    "copy-manifests": "copy public\\manifest.json dist\\ && copy public\\manifest-firefox.json dist-firefox\\manifest.json && copy public\\popup.html dist\\ && copy public\\popup.html dist-firefox\\",
     "watch": "vite build --watch"
   },
   "devDependencies": {

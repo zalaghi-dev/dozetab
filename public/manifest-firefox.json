@@ -1,0 +1,44 @@
+{
+  "manifest_version": 2,
+  "name": "DozeTab",
+  "version": "1.0.0",
+  "description": "DozeTabs - A lightweight Firefox extension that lets you doze your tabs instead of keeping them open.",
+  
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "DozeTab"
+  },
+  
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  
+  "permissions": [
+    "storage", 
+    "tabs", 
+    "notifications",
+    "<all_urls>"
+  ],
+  
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "dozetab@example.com",
+      "strict_min_version": "57.0"
+    }
+  }
+}
