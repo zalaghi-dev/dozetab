@@ -54,18 +54,20 @@ export const SnoozeTab = () => {
 
   return (
     <div className={`p-4 space-y-4 ${isRTL ? 'rtl' : 'ltr'}`}>
-      <div className="text-center space-y-2">
-        <h2 className="text-lg font-semibold">{t('snooze.title')}</h2>
+      {/* Header */}
+      <div className="text-center space-y-2 pb-2">
+        <h2 className="text-lg font-semibold text-foreground">{t('snooze.title')}</h2>
         <p className="text-sm text-muted-foreground">{t('snooze.subtitle')}</p>
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium flex items-center gap-2">
-          <Clock className="w-4 h-4" />
+      {/* Duration Selector */}
+      <div className="space-y-2 p-3 bg-card rounded-lg border border-border">
+        <label className="text-sm font-medium flex items-center gap-2 text-foreground">
+          <Clock className="w-4 h-4 text-primary" />
           Duration
         </label>
         <Select value={snoozeDuration} onValueChange={setSnoozeDuration}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-background border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -78,24 +80,30 @@ export const SnoozeTab = () => {
         </Select>
       </div>
 
-      <div className="space-y-2 max-h-60 overflow-y-auto">
+      {/* Tabs List */}
+      <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+        <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+          <Globe className="w-4 h-4 text-primary" />
+          Select tabs to snooze
+        </h3>
         {tabs.map(tab => (
-          <div key={tab.id} className="flex items-center space-x-2 p-2 rounded-lg border hover:bg-accent/50">
+          <div key={tab.id} className="flex items-center space-x-2 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors">
             <Checkbox
               checked={selectedTabs.includes(tab.id)}
               onCheckedChange={(checked: boolean) => handleTabSelection(tab.id, checked)}
             />
             <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{tab.title}</p>
+              <p className="text-sm font-medium text-foreground truncate">{tab.title}</p>
               <p className="text-xs text-muted-foreground truncate">{tab.url}</p>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Action Button */}
       <Button 
-        className="w-full" 
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium" 
         onClick={handleSnoozeSelected}
         disabled={selectedTabs.length === 0}
       >

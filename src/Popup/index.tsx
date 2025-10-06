@@ -26,10 +26,23 @@ const Popup = () => {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className={`bg-background text-foreground w-full h-full min-h-[500px] flex flex-col ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`bg-background text-foreground w-full h-full min-h-[500px] flex flex-col ${isRTL ? 'rtl' : 'ltr'} relative overflow-hidden`}>
+        {/* Header with brand colors */}
+        <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-center">
+          <h1 className="text-lg font-bold">DozeTab 💤</h1>
+        </div>
+        
         <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-        <div className="flex-1 overflow-hidden">
+        
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {renderTabContent()}
+        </div>
+        
+        {/* Footer */}
+        <div className="border-t border-border px-4 py-2 bg-card">
+          <p className="text-xs text-muted-foreground text-center">
+            DozeTab - Better tab management
+          </p>
         </div>
       </div>
     </ThemeProvider>
