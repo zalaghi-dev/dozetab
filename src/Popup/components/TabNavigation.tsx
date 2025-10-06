@@ -20,26 +20,21 @@ export const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) =>
       id: 'snoozed', 
       label: t('tabs.snoozed'),
       icon: History
-    },
-    { 
-      id: 'settings', 
-      label: t('tabs.settings'),
-      icon: Settings
     }
   ];
 
   return (
-    <div className="flex w-full bg-card border-b border-border">
+    <div className="flex w-full bg-transparent">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         return (
           <Button
             key={tab.id}
-            variant={activeTab === tab.id ? "default" : "ghost"}
-            className={`flex-1 rounded-none h-12 flex items-center gap-2 ${
+            variant="ghost"
+            className={`flex-1 rounded-none h-10 flex items-center gap-2 border-b-2 transition-all ${
               activeTab === tab.id 
-                ? "bg-primary text-primary-foreground border-b-2 border-primary shadow-sm" 
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                ? "text-white border-primary bg-transparent" 
+                : "text-gray-400 border-transparent hover:text-white hover:border-gray-600"
             }`}
             onClick={() => onTabChange(tab.id)}
           >
