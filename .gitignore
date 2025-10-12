@@ -1,3 +1,5 @@
 /dist
 /dist-firefox
 /node_modules
+/screenshots
+/public/icons-test
