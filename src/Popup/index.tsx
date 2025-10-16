@@ -16,18 +16,18 @@ const Popup = () => {
   const [activeTab, setActiveTab] = useState("snooze");
   const { isRTL } = useLanguage();
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "snooze":
-        return <SnoozeTab />;
-      case "snoozed":
-        return <SnoozedTab />;
-      case "settings":
-        return <SettingsTab />;
-      default:
-        return <SnoozeTab />;
-    }
-  };
+  // const renderTabContent = () => {
+  //   switch (activeTab) {
+  //     case "snooze":
+  //       return <SnoozeTab />;
+  //     case "snoozed":
+  //       return <SnoozedTab />;
+  //     case "settings":
+  //       return <SettingsTab />;
+  //     default:
+  //       return <SnoozeTab />;
+  //   }
+  // };
   const buttonsConfig = [
     { icon: "/icons/main/startup.png", label: "Every Browser Startup" },
     { icon: "/icons/main/in-an-hour.png", label: "Every Hour" },
