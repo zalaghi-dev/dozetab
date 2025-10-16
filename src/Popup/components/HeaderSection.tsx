@@ -53,7 +53,7 @@ const HeaderSection = ({ activeTab, setActiveTab }: HeaderSectionProps) => {
         <div>
           <div className="flex bg-muted items-center px-3 p-1 rounded-lg h-full w-full gap-3 border">
             <Avatar className="ring-2 size-6 ring-background">
-              <AvatarImage src="/icons/window.png" alt="window" />
+              <AvatarImage src="/icons/main/window.png" alt="window" />
               <AvatarFallback>Wi</AvatarFallback>
             </Avatar>
             <p className="font-semibold">Lorem ipsum dolor sit amet consectetur</p>

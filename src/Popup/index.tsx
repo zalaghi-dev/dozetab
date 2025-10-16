@@ -10,6 +10,7 @@ import HeaderSection from "./components/HeaderSection";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Icon, XIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Popup = () => {
   const [activeTab, setActiveTab] = useState("snooze");
@@ -27,7 +28,18 @@ const Popup = () => {
         return <SnoozeTab />;
     }
   };
-  const buttonsConfig = [{ icon: "", logo: "" }];
+  const buttonsConfig = [
+    { icon: "/icons/main/startup.png", label: "Every Browser Startup" },
+    { icon: "/icons/main/in-an-hour.png", label: "Every Hour" },
+    { icon: "/icons/main/today-morning.png", label: "Every Morning" },
+    { icon: "/icons/main/today-evening.png", label: "Everyday now" },
+    { icon: "/icons/main/tom-morning.png", label: "Every Morning" },
+    { icon: "/icons/main/tom-evening.png", label: "Every Evening" },
+    { icon: "/icons/main/weekend.png", label: "Every Saturday" },
+    { icon: "/icons/main/monday.png", label: "Every Monday" },
+    { icon: "/icons/main/week.png", label: "Every Sunday" },
+    { icon: "/icons/main/month.png", label: "Every Month" },
+  ];
   const [showOwnTime, setShowOwnTime] = useState(false);
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -41,20 +53,24 @@ const Popup = () => {
         <div className="p-4">
           {!showOwnTime ? (
             <div className="grid gap-2  grid-cols-2">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+              {buttonsConfig.map(({ icon, label }) => (
                 <Button
-                  className="cursor-pointer p-5"
-                  key={n}
+                  className="cursor-pointer justify-start p-5"
+                  key={label}
                   variant="outline"
                 >
-                  Button {n}
+                  <Avatar className="rounded-none size-5">
+                    <AvatarImage src={icon} alt="window" />
+                    <AvatarFallback>{label.substring(0, 2)}</AvatarFallback>
+                  </Avatar>
+                  {label}
                 </Button>
               ))}
             </div>
           ) : (
             <></>
           )}
-          {!showOwnTime ? (
+          {/* {!showOwnTime ? (
             <div className="grid gap-2 p-4 grid-cols-2">
               <Button
                 onClick={() => {
@@ -88,7 +104,7 @@ const Popup = () => {
                 <XIcon className="size-3" />
               </Button>
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {renderTabContent()}
