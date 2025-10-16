@@ -1,15 +1,6 @@
-// DozeTab Background Script - Cross-browser compatibility (Firefox + Chrome)
+// DozeTab Background Script - Chrome Extension
 
-// Browser compatibility layer
-const browserAPI = (() => {
-  // @ts-ignore
-  if (typeof browser !== 'undefined') {
-    // @ts-ignore
-    return browser; // Firefox
-  }
-  return chrome; // Chrome
-})();
-
+// Define types for extension APIs
 interface SnoozedTab {
   id: string;
   url: string;
@@ -17,6 +8,23 @@ interface SnoozedTab {
   wakeUpTime: number;
   originalTabId?: number;
 }
+
+// Message types
+type ExtensionMessage = 
+  | { action: 'getTabs' }
+  | { action: 'snoozeTabs'; tabIds: number[]; duration: string }
+  | { action: 'getSnoozedTabs' }
+  | { action: 'restoreTab'; tabId: string }
+  | { action: 'deleteTab'; tabId: string };
+
+// Response types
+type ExtensionResponse = 
+  | { success: true; tabs: chrome.tabs.Tab[] }
+  | { success: true; tabs: SnoozedTab[] }
+  | { success: boolean }
+  | { success: false; error: string };
+
+type SnoozeDuration = '15min' | '1hour' | 'tomorrow' | 'nextweek';
 
 class DozeTabManager {
   private snoozedTabs: Map<string, SnoozedTab> = new Map();
@@ -28,7 +36,7 @@ class DozeTabManager {
 
   private async init() {
     // Load saved tabs from storage
-    const stored = await browserAPI.storage.local.get(['snoozedTabs']);
+    const stored = await chrome.storage.local.get(["snoozedTabs"]);
     if (stored.snoozedTabs) {
       this.snoozedTabs = new Map(stored.snoozedTabs);
       this.restoreTimers();
@@ -38,88 +46,111 @@ class DozeTabManager {
     this.setupListeners();
   }
 
-  private setupListeners() {
+  private setupListeners(): void {
     // Messaging with popup
-    browserAPI.runtime.onMessage.addListener((message: any, sender: any, sendResponse: any) => {
-      this.handleMessage(message, sendResponse);
-      return true; // async response
-    });
+    chrome.runtime.onMessage.addListener(
+      (
+        message: ExtensionMessage,
+        sender: chrome.runtime.MessageSender,
+        sendResponse: (response: ExtensionResponse) => void
+      ): boolean => {
+        this.handleMessage(message, sendResponse);
+        return true; // Required for async sendResponse
+      }
+    );
 
-    // Check for closed tabs
-    browserAPI.tabs.onRemoved.addListener((tabId: any) => {
-      this.handleTabClosed(tabId);
+    // Tab removal listener to clean up snoozed tabs
+    chrome.tabs.onRemoved.addListener((tabId: number) => {
+      this.snoozedTabs.delete(tabId.toString());
+      this.saveSnoozedTabs();
     });
   }
 
-  private async handleMessage(message: any, sendResponse: (response: any) => void) {
-    switch (message.action) {
-      case 'getTabs':
-        const tabs = await this.getCurrentTabs();
-        sendResponse({ success: true, tabs });
-        break;
+  private async handleMessage(
+    message: ExtensionMessage,
+    sendResponse: (response: ExtensionResponse) => void
+  ): Promise<void> {
+    try {
+      switch (message.action) {
+        case "getTabs":
+          const tabs = await this.getCurrentTabs();
+          sendResponse({ success: true, tabs });
+          break;
 
-      case 'snoozeTabs':
-        const result = await this.snoozeTabs(message.tabIds, message.duration);
-        sendResponse({ success: result });
-        break;
+        case "snoozeTabs":
+          const result = await this.snoozeTabs(message.tabIds, message.duration);
+          sendResponse({ success: result });
+          break;
 
-      case 'getSnoozedTabs':
-        const snoozed = Array.from(this.snoozedTabs.values());
-        sendResponse({ success: true, tabs: snoozed });
-        break;
+        case "getSnoozedTabs":
+          const snoozed = Array.from(this.snoozedTabs.values());
+          sendResponse({ success: true, tabs: snoozed });
+          break;
 
-      case 'restoreTab':
-        const restored = await this.restoreTab(message.tabId);
-        sendResponse({ success: restored });
-        break;
+        case "restoreTab":
+          const restored = await this.restoreTab(message.tabId);
+          sendResponse({ success: restored });
+          break;
 
-      case 'deleteTab':
-        const deleted = this.deleteSnoozedTab(message.tabId);
-        sendResponse({ success: deleted });
-        break;
+        case "deleteTab":
+          const deleted = this.deleteSnoozedTab(message.tabId);
+          sendResponse({ success: deleted });
+          break;
 
-      default:
-        sendResponse({ success: false, error: 'Unknown action' });
+        default:
+          sendResponse({ success: false, error: "Unknown action" });
+      }
+    } catch (error) {
+      console.error("Error handling message:", error);
+      sendResponse({ success: false, error: "Internal error" });
     }
   }
 
-  private async getCurrentTabs(): Promise<any[]> {
+  private async getCurrentTabs(): Promise<chrome.tabs.Tab[]> {
     try {
-      const tabs = await browserAPI.tabs.query({ currentWindow: true });
-      return tabs.filter((tab: any) => tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('moz-extension://'));
+      const tabs = await chrome.tabs.query({ currentWindow: true });
+      return tabs.filter(
+        (tab: chrome.tabs.Tab) =>
+          tab.url &&
+          !tab.url.startsWith("chrome://") &&
+          !tab.url.startsWith("moz-extension://")
+      );
     } catch (error) {
-      console.error('Error getting tabs:', error);
+      console.error("Error getting tabs:", error);
       return [];
     }
   }
 
-  private async snoozeTabs(tabIds: number[], duration: string): Promise<boolean> {
+  private async snoozeTabs(
+    tabIds: number[],
+    duration: string
+  ): Promise<boolean> {
     try {
       const wakeUpTime = this.calculateWakeUpTime(duration);
-      
+
       for (const tabId of tabIds) {
-        const tab = await browserAPI.tabs.get(tabId);
+        const tab = await chrome.tabs.get(tabId);
         if (tab && tab.url && tab.title) {
           const snoozedTab: SnoozedTab = {
             id: `${Date.now()}-${tabId}`,
             url: tab.url,
             title: tab.title,
             wakeUpTime,
-            originalTabId: tabId
+            originalTabId: tabId,
           };
 
           this.snoozedTabs.set(snoozedTab.id, snoozedTab);
           this.setWakeUpTimer(snoozedTab);
-          
+
           // Close original tab
-          await browserAPI.tabs.remove(tabId);
+          await chrome.tabs.remove(tabId);
         }
       }
 
       await this.saveSnoozedTabs();
       return true;
     } catch (error) {
-      console.error('Error snoozing tabs:', error);
+      console.error("Error snoozing tabs:", error);
       return false;
     }
   }
@@ -127,33 +158,33 @@ class DozeTabManager {
   private calculateWakeUpTime(duration: string): number {
     const now = Date.now();
     switch (duration) {
-      case '15min':
-        return now + (15 * 60 * 1000);
-      case '1hour':
-        return now + (60 * 60 * 1000);
-      case 'tomorrow':
+      case "15min":
+        return now + 15 * 60 * 1000;
+      case "1hour":
+        return now + 60 * 60 * 1000;
+      case "tomorrow":
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(9, 0, 0, 0);
         return tomorrow.getTime();
-      case 'nextweek':
+      case "nextweek":
         const nextWeek = new Date();
         nextWeek.setDate(nextWeek.getDate() + 7);
         nextWeek.setHours(9, 0, 0, 0);
         return nextWeek.getTime();
       default:
-        return now + (15 * 60 * 1000); // default 15min
+        return now + 15 * 60 * 1000; // default 15min
     }
   }
 
   private setWakeUpTimer(snoozedTab: SnoozedTab) {
     const delay = snoozedTab.wakeUpTime - Date.now();
-    
+
     if (delay > 0) {
       const timer = setTimeout(() => {
         this.wakeUpTab(snoozedTab.id);
       }, delay);
-      
+
       this.timers.set(snoozedTab.id, timer);
     }
   }
@@ -163,23 +194,24 @@ class DozeTabManager {
     if (snoozedTab) {
       try {
         // Open tab
-        await browserAPI.tabs.create({
+        await chrome.tabs.create({
           url: snoozedTab.url,
-          active: false
+          active: false,
         });
 
         // Show notification
-        browserAPI.notifications.create({
-          type: 'basic',
-          iconUrl: '/icon-48.png',
-          title: 'DozeTab',
-          message: `Tab restored: ${snoozedTab.title}`
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: "/icon-48.png",
+          title: "DozeTab",
+          message: `Tab restored: ${snoozedTab.title}`,
         });
 
         // Remove from list
-        this.deleteSnoozedTab(tabId);
+        this.snoozedTabs.delete(tabId);
+        await this.saveSnoozedTabs();
       } catch (error) {
-        console.error('Error waking up tab:', error);
+        console.error("Error waking up tab:", error);
       }
     }
   }
@@ -188,15 +220,15 @@ class DozeTabManager {
     const snoozedTab = this.snoozedTabs.get(tabId);
     if (snoozedTab) {
       try {
-        await browserAPI.tabs.create({
+        await chrome.tabs.create({
           url: snoozedTab.url,
-          active: true
+          active: true,
         });
-        
+
         this.deleteSnoozedTab(tabId);
         return true;
       } catch (error) {
-        console.error('Error restoring tab:', error);
+        console.error("Error restoring tab:", error);
         return false;
       }
     }
@@ -211,7 +243,7 @@ class DozeTabManager {
         clearTimeout(timer);
         this.timers.delete(tabId);
       }
-      
+
       // Remove tab
       this.snoozedTabs.delete(tabId);
       this.saveSnoozedTabs();
@@ -222,7 +254,7 @@ class DozeTabManager {
 
   private async saveSnoozedTabs() {
     const dataToSave = Array.from(this.snoozedTabs.entries());
-    await browserAPI.storage.local.set({ snoozedTabs: dataToSave });
+    await chrome.storage.local.set({ snoozedTabs: dataToSave });
   }
 
   private restoreTimers() {
@@ -245,4 +277,4 @@ class DozeTabManager {
 // Start manager
 const dozeTabManager = new DozeTabManager();
 
-console.log('DozeTab background script loaded');
+console.log("DozeTab background script loaded");
