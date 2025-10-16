@@ -70,6 +70,12 @@ const Popup = () => {
           ) : (
             <></>
           )}
+          <div className="grid gap-2 p-4 grid-cols-2">
+            <div className="flex text-base justify-center gap-2 items-center">
+              <Checkbox checked />
+              Repeat?
+            </div>
+          </div>
           {/* {!showOwnTime ? (
             <div className="grid gap-2 p-4 grid-cols-2">
               <Button
