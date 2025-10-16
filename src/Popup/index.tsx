@@ -112,9 +112,9 @@ const Popup = () => {
             </div>
           )} */}
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {/* <div className="flex-1 overflow-y-auto custom-scrollbar">
           {renderTabContent()}
-        </div>
+        </div> */}
 
         {/* Footer */}
         <div className="border-t border-border px-4 py-3 bg-card flex items-center justify-between">
