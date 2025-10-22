@@ -2,8 +2,10 @@ import React, { createContext, useContext, ReactNode } from "react";
 import { useTabs, TabInfo, TabSummary } from "../hooks/useTabs";
 
 interface TabContextType {
-  selectedMode: string;
-  setSelectedMode: (mode: string) => void;
+  selectedMode: "this_tab" | "window" | "selected";
+  setSelectedMode: React.Dispatch<
+    React.SetStateAction<"this_tab" | "window" | "selected">
+  >;
   tabSummary: TabSummary;
   selectedTabs: TabInfo[];
   setSelectedTabs: (tabs: TabInfo[]) => void;

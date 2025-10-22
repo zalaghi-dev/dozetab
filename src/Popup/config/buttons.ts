@@ -1,0 +1,149 @@
+import ButtonValue from './buttonValues';
+
+const nonRepeatButtonsConfig = [
+  {
+    value: ButtonValue.ON_NEXT_STARTUP,
+    icon: "/icons/main/startup.png",
+    label: "On Next Startup",
+    time: "",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.IN_ONE_HOUR,
+    icon: "/icons/main/in-an-hour.png",
+    label: "In One Hour",
+    time: "TODAY\n6:09 PM",
+    highlighted: true,
+  },
+  {
+    value: ButtonValue.THIS_MORNING,
+    icon: "/icons/main/today-morning.png",
+    label: "This Morning",
+    time: "TODAY\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.THIS_EVENING,
+    icon: "/icons/main/today-evening.png",
+    label: "This Evening",
+    time: "TODAY\n6 PM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.TOMORROW_MORNING,
+    icon: "/icons/main/tom-morning.png",
+    label: "Tomorrow Morning",
+    time: "MON, 13 OCT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.TOMORROW_EVENING,
+    icon: "/icons/main/tom-evening.png",
+    label: "Tomorrow Evening",
+    time: "MON, 13 OCT\n6 PM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.SATURDAY,
+    icon: "/icons/main/weekend.png",
+    label: "Saturday",
+    time: "SAT, 18 OCT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.NEXT_MONDAY,
+    icon: "/icons/main/monday.png",
+    label: "Next Monday",
+    time: "MON, 13 OCT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.NEXT_WEEK,
+    icon: "/icons/main/week.png",
+    label: "Next Week",
+    time: "SUN, 19 OCT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.NEXT_MONTH,
+    icon: "/icons/main/month.png",
+    label: "Next Month",
+    time: "WED, 12 NOV\n9 AM",
+    highlighted: false,
+  },
+];
+
+const repeatButtonsConfig = [
+  {
+    value: ButtonValue.EVERY_STARTUP,
+    icon: "/icons/main/startup.png",
+    label: "Every Browser Startup",
+    time: "",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_HOUR,
+    icon: "/icons/main/in-an-hour.png",
+    label: "Every hour",
+    time: "STARTS AT\n6:09 PM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_MORNING,
+    icon: "/icons/main/today-morning.png",
+    label: "Every Morning",
+    time: "STARTS TOM AT\n9:00 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERYDAY_NOW,
+    icon: "/icons/main/today-evening.png",
+    label: "Everyday, Now",
+    time: "STARTS TOM AT\n5:09 PM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_EVENING,
+    icon: "/icons/main/tom-morning.png",
+    label: "This Evening",
+    time: "STARTS TODAY AT\n6:00 PM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_MONDAY,
+    icon: "/icons/main/tom-evening.png",
+    label: "Every Monday",
+    time: "MONDAYS AT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_SATURDAY,
+    icon: "/icons/main/weekend.png",
+    label: "Every Saturday",
+    time: "SATURDAYS AT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_SUNDAY,
+    icon: "/icons/main/monday.png",
+    label: "Every Sunday",
+    time: "SUNDAYS AT\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.EVERY_MONTH,
+    icon: "/icons/main/week.png",
+    label: "Every Month",
+    time: "12TH OF MONTH\n9 AM",
+    highlighted: false,
+  },
+  {
+    value: ButtonValue.CUSTOM_INTERVAL,
+    icon: "/icons/main/month.png",
+    label: "Choose a custom interval",
+    time: "",
+    highlighted: false,
+  },
+];
+
+export { nonRepeatButtonsConfig, repeatButtonsConfig };

@@ -18,7 +18,9 @@ export interface TabSummary {
 }
 
 export const useTabs = () => {
-  const [selectedMode, setSelectedMode] = useState("window");
+  const [selectedMode, setSelectedMode] = useState<
+    "this_tab" | "window" | "selected"
+  >("window");
   const [tabSummary, setTabSummary] = useState<TabSummary>({
     tabs: [],
     totalTabs: 0,
