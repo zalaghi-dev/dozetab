@@ -23,6 +23,6 @@
     }
   ],
 
-  "permissions": ["storage", "tabs", "scripting", "notifications"],
+  "permissions": ["storage", "tabs", "scripting", "notifications", "alarms"],
   "host_permissions": ["<all_urls>"]
 }

@@ -8,29 +8,46 @@ interface MainButtonsProps {
   isRepeatEnabled: boolean;
 }
 const MainButtons = ({ isRepeatEnabled }: MainButtonsProps) => {
-  const { selectedMode, getCurrentTab, getAllTabs } = useTabContext();
+  const { selectedMode, getCurrentTab, getAllTabs, getSelectedTabs } = useTabContext();
 
   const currentButtonsConfig = isRepeatEnabled
     ? repeatButtonsConfig
     : nonRepeatButtonsConfig;
   const handleButtonClick = async (value: ButtonValue) => {
-    switch (selectedMode) {
-      case "this_tab":
+    try {
+      if (selectedMode === "this_tab") {
         const tab = await getCurrentTab();
-        if (tab?.id) chrome.tabs.remove(tab.id);
+        const tabsToSend = tab ? [{ id: tab.id, url: tab.url, title: tab.title, favIconUrl: tab.favIconUrl }] : [];
+        const res = await chrome.runtime.sendMessage({ type: "snoozeTabs", value, repeat: isRepeatEnabled, tabs: tabsToSend });
+        if (res?.success && tab?.id) {
+          await chrome.tabs.remove(tab.id);
+        }
+        return;
+      }
 
-        break;
-      case "window":
+      if (selectedMode === "window") {
         const tabs = await getAllTabs();
-        const chromeWindow = await chrome.windows.getCurrent();
-        if (chromeWindow?.id) chrome.windows.remove(chromeWindow.id);
+        const tabsToSend = tabs.map(t => ({ id: t.id, url: t.url, title: t.title, favIconUrl: t.favIconUrl }));
+        const res = await chrome.runtime.sendMessage({ type: "snoozeTabs", value, repeat: isRepeatEnabled, tabs: tabsToSend });
+        if (res?.success) {
+          const chromeWindow = await chrome.windows.getCurrent();
+          if (chromeWindow?.id) await chrome.windows.remove(chromeWindow.id);
+        }
+        return;
+      }
 
-        break;
-      case "selected":
-        break;
-
-      default:
-        break;
+      if (selectedMode === "selected") {
+        const tabs = await getSelectedTabs();
+        const tabsToSend = tabs.map(t => ({ id: t.id, url: t.url, title: t.title, favIconUrl: t.favIconUrl }));
+        const res = await chrome.runtime.sendMessage({ type: "snoozeTabs", value, repeat: isRepeatEnabled, tabs: tabsToSend });
+        if (res?.success) {
+          const ids = tabs.filter(t => t.id != null).map(t => t.id!)
+          if (ids.length) await chrome.tabs.remove(ids);
+        }
+        return;
+      }
+    } catch (e) {
+      console.error("handleButtonClick error", e);
     }
   };
 

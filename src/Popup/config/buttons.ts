@@ -2,6 +2,13 @@ import ButtonValue from './buttonValues';
 
 const nonRepeatButtonsConfig = [
   {
+    value: ButtonValue.IN_ONE_MINUTE,
+    icon: "/icons/main/in-an-hour.png",
+    label: "In One Minute",
+    time: "~ 1 min",
+    highlighted: true,
+  },
+  {
     value: ButtonValue.ON_NEXT_STARTUP,
     icon: "/icons/main/startup.png",
     label: "On Next Startup",

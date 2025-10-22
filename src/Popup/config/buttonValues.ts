@@ -1,5 +1,6 @@
 // Central enum for button `value` identifiers used across the popup
 export enum ButtonValue {
+  IN_ONE_MINUTE = "in_one_minute",
   ON_NEXT_STARTUP = "on_next_startup",
   IN_ONE_HOUR = "in_one_hour",
   THIS_MORNING = "this_morning",
